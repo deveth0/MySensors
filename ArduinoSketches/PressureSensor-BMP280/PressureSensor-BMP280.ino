@@ -25,12 +25,6 @@
  */
 
 
-#include <SPI.h>
-#include <MySensors.h>
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BMP280.h>
-
 // Enable debug prints to serial monitor
 #define MY_DEBUG
 
@@ -39,6 +33,13 @@
 #define MY_RF24_CE_PIN 9
 #define MY_RF24_CS_PIN 10
 
+
+
+#include <SPI.h>
+#include <MySensors.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h>
 
 // Sleep time between reads (in milliseconds)
 const unsigned long SLEEP_TIME = 60000;
@@ -77,7 +78,13 @@ void loop()
 {
 	float pressure = bmp.readPressure();
 	float temperature = bmp.readTemperature();
-
+  Serial.print("Temperature = ");
+  Serial.print(temperature);
+  Serial.println(" *C");
+  Serial.print("Pressure = ");
+  Serial.print(pressure);
+  Serial.println(" hPa");
+    
 	if (temperature != lastTemp)
 	{
 		send(tempMsg.set(temperature, V_TEMP));
