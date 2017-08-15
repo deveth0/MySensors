@@ -33,7 +33,9 @@
 #define MY_RF24_CE_PIN 9
 #define MY_RF24_CS_PIN 10
 
-
+#define VBAT_PER_BITS 0.003363075  // Calculated volts per bit from the used battery montoring voltage divider.   Internal_ref=1.1V, res=10bit=2^10-1=1023, Eg for 3V (2AA): Vin/Vb=R1/(R1+R2)=470e3/(1e6+470e3),  Vlim=Vb/Vin*1.1=3.44V, Volts per bit = Vlim/1023= 0.003363075
+#define VMIN 1.9  // Battery monitor lower level. Vmin_radio=1.9V
+#define VMAX 3.3  //  " " " high level. Vmin<Vmax<=3.44
 
 #include <SPI.h>
 #include <MySensors.h>
@@ -56,6 +58,10 @@ MyMessage tempMsg(CHILD_ID, V_TEMP);
 MyMessage pressureMsg(CHILD_ID, V_PRESSURE);
 
 
+int BATTERY_SENSE_PIN = A0;  // select the input pin for the battery sense point
+int oldBatteryPcnt = 0;
+
+
 void setup()
 {
 	if (!bmp.begin(0x76))
@@ -63,6 +69,7 @@ void setup()
 		Serial.println("Could not find a valid BMP280 sensor, check wiring!");
 		while (1) {}
 	}
+  analogReference(INTERNAL);
 }
 
 void presentation()  {
@@ -96,6 +103,14 @@ void loop()
 		send(pressureMsg.set(pressure, V_PRESSURE));
 		lastPressure = pressure;
 	}
+
+  int sensorValue = analogRead(BATTERY_SENSE_PIN);    // Battery monitoring reading
+  Serial.println(sensorValue);
+  float Vbat  = sensorValue * VBAT_PER_BITS;
+  Serial.print("Battery Voltage: "); Serial.print(Vbat); Serial.println(" V");
+  //int batteryPcnt = sensorValue / 10;
+  int batteryPcnt = static_cast<int>(((Vbat-VMIN)/(VMAX-VMIN))*100.);   
+  Serial.print("Battery percent: "); Serial.print(batteryPcnt); Serial.println(" %");
 
 	sleep(SLEEP_TIME);
 }

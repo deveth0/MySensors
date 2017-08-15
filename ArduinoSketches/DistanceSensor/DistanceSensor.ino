@@ -26,10 +26,6 @@
  * http://www.mysensors.org/build/distance
  */
 
-#include <Wire.h>
-#include <SPI.h>
-#include <MySensors.h>
-#include <NewPing.h>
 
 // Enable debug prints to serial monitor
 #define MY_DEBUG
@@ -41,6 +37,13 @@
 
 // Sleep time between reads (in milliseconds)
 unsigned long SLEEP_TIME = 3000;
+
+
+#include <Wire.h>
+#include <SPI.h>
+#include <MySensors.h>
+#include <NewPing.h>
+
 
 // Pins used for the Sensors
 #define TRIGGER_PIN  6  // Arduino pin tied to trigger pin on the ultrasonic sensor.
@@ -60,7 +63,7 @@ MyMessage msg(CHILD_ID, V_DISTANCE);
 
 void setup()
 {
-  metric = getControllerConfig().isMetric;
+  
 }
 
 void presentation() {
@@ -75,9 +78,12 @@ void loop()
 {
   // Ping 5 times and calculate median
   int dist_ms = sonar.ping_median(5);
+  Serial.print(dist_ms);
   // Calculate actual distance
   int dist = sonar.convert_cm(dist_ms);
-
+  Serial.print("Distance = ");
+  Serial.print(dist);
+  Serial.println(" cm");
   if (dist != lastDist) {
       send(msg.set(dist));
       lastDist = dist;
