@@ -33,9 +33,15 @@
 #define MY_RF24_CE_PIN 9
 #define MY_RF24_CS_PIN 10
 
+// If debugging is enabled, ignore issues with a missing gateway
+#ifdef MY_DEBUG
+#define MY_TRANSPORT_WAIT_READY_MS 1
+#endif
+
+// We use 2AA Batteries with 1.2V each, so the VMAX is 2.4V
 #define VBAT_PER_BITS 0.003363075  // Calculated volts per bit from the used battery montoring voltage divider.   Internal_ref=1.1V, res=10bit=2^10-1=1023, Eg for 3V (2AA): Vin/Vb=R1/(R1+R2)=470e3/(1e6+470e3),  Vlim=Vb/Vin*1.1=3.44V, Volts per bit = Vlim/1023= 0.003363075
 #define VMIN 1.9  // Battery monitor lower level. Vmin_radio=1.9V
-#define VMAX 3.3  //  " " " high level. Vmin<Vmax<=3.44
+#define VMAX 2.4  //  " " " high level. Vmin<Vmax<=3.44
 
 #include <SPI.h>
 #include <MySensors.h>
@@ -44,19 +50,24 @@
 #include <Adafruit_BMP280.h>
 
 // Sleep time between reads (in milliseconds)
-const unsigned long SLEEP_TIME = 60000;
+#ifdef MY_DEBUG
+const unsigned long SLEEP_TIME = 1000; // debug? update each second
+#else
+const unsigned long SLEEP_TIME = 60000; // once a minute
+#endif
 
 
 Adafruit_BMP280 bmp;
 float lastPressure = -1;
 float lastTemp = -1;
+float lastVolt = -1;
 
 // IDs used
 #define CHILD_ID 40
 
 MyMessage tempMsg(CHILD_ID, V_TEMP);
 MyMessage pressureMsg(CHILD_ID, V_PRESSURE);
-
+MyMessage voltMsg(CHILD_ID, V_VOLTAGE);
 
 int BATTERY_SENSE_PIN = A0;  // select the input pin for the battery sense point
 int oldBatteryPcnt = 0;
@@ -79,39 +90,50 @@ void presentation()  {
   // Register sensors to gw
   present(CHILD_ID, S_BARO);
   present(CHILD_ID, S_TEMP);
+  present(CHILD_ID, S_MULTIMETER);
 }
 
 void loop()
 {
+  // Read pressure and temperature
 	float pressure = bmp.readPressure();
 	float temperature = bmp.readTemperature();
-  Serial.print("Temperature = ");
-  Serial.print(temperature);
-  Serial.println(" *C");
-  Serial.print("Pressure = ");
-  Serial.print(pressure);
-  Serial.println(" hPa");
+  
     
-	if (temperature != lastTemp)
-	{
-		send(tempMsg.set(temperature, V_TEMP));
-		lastTemp = temperature;
-	}
-
-	if (pressure != lastPressure)
-	{
-		send(pressureMsg.set(pressure, V_PRESSURE));
-		lastPressure = pressure;
-	}
-
+	// Read voltage
   int sensorValue = analogRead(BATTERY_SENSE_PIN);    // Battery monitoring reading
-  Serial.println(sensorValue);
-  float Vbat  = sensorValue * VBAT_PER_BITS;
-  Serial.print("Battery Voltage: "); Serial.print(Vbat); Serial.println(" V");
+  
+  float volt  = sensorValue * VBAT_PER_BITS;
   //int batteryPcnt = sensorValue / 10;
-  int batteryPcnt = static_cast<int>(((Vbat-VMIN)/(VMAX-VMIN))*100.);   
-  Serial.print("Battery percent: "); Serial.print(batteryPcnt); Serial.println(" %");
+  int batteryPcnt = static_cast<int>(((volt-VMIN)/(VMAX-VMIN))*100.);   
 
+  #ifdef MY_DEBUG
+  Serial.print("Temperature = "); Serial.print(temperature); Serial.println(" *C"); 
+  Serial.print("Pressure = "); Serial.print(pressure); Serial.println(" hPa");
+  Serial.print("A0 analogRead = "); Serial.println(sensorValue);
+  Serial.print("Battery Voltage= "); Serial.print(volt); Serial.println(" V");
+  Serial.print("Battery percent= "); Serial.print(batteryPcnt); Serial.println(" %");
+  #endif
+
+  // Send values to gateway
+  if (temperature != lastTemp)
+  {
+    send(tempMsg.set(temperature, 1));
+    lastTemp = temperature;
+  }
+
+  if (pressure != lastPressure)
+  {
+    send(pressureMsg.set(pressure, V_PRESSURE));
+    lastPressure = pressure;
+  }
+
+  if (volt != lastVolt)
+  {
+    send(voltMsg.set(volt, 2));
+    lastVolt = volt;
+  }
+  
 	sleep(SLEEP_TIME);
 }
 
