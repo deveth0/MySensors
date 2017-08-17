@@ -1,0 +1,17 @@
+#############################################
+########### Arduino Pro Mini 1Mhz ###########
+#############################################
+
+promini1MhzInt.name=Arduino Pro Mini (1MHz internal, 1.8V)
+promini1MhzInt.upload.tool=avrdude
+promini1MhzInt.build.board=AVR_PRO
+promini1MhzInt.build.mcu=atmega328p
+promini1MhzInt.build.f_cpu=1000000L
+promini1MhzInt.build.core=arduino
+promini1MhzInt.build.variant=eightanaloginputs
+
+promini1MhzInt.menu.cpu.8MHzatmega328=ATmega328 (1.8V, 1Mhz)
+promini1MhzInt.menu.cpu.8MHzatmega328.bootloader.low_fuses=0x62
+promini1MhzInt.menu.cpu.8MHzatmega328.bootloader.high_fuses=0xDA
+promini1MhzInt.menu.cpu.8MHzatmega328.bootloader.extended_fuses=0xFF
+

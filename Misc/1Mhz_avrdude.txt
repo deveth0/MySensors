@@ -1,0 +1,2 @@
+C:\Program Files (x86)\Arduino\hardware\tools\avr/bin/avrdude -CC:\Program Files (x86)\Arduino\hardware\tools\avr/etc/avrdude.conf -v -patmega328p -cstk500v1 -PCOM7 -b19200 -U lfuse:w:0x62:m -U hfuse:w:0xda:m -U efuse:w:0xff:m
+

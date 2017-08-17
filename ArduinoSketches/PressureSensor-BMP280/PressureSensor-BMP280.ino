@@ -26,7 +26,7 @@
 
 
 // Enable debug prints to serial monitor
-#define MY_DEBUG
+//#define MY_DEBUG
 
 // Enable and select radio type attached
 #define MY_RADIO_NRF24
@@ -53,7 +53,7 @@
 #ifdef MY_DEBUG
 const unsigned long SLEEP_TIME = 1000; // debug? update each second
 #else
-const unsigned long SLEEP_TIME = 60000; // once a minute
+const unsigned long SLEEP_TIME = 300000; // once every 5 minutes
 #endif
 
 
@@ -70,8 +70,6 @@ MyMessage pressureMsg(CHILD_ID, V_PRESSURE);
 MyMessage voltMsg(CHILD_ID, V_VOLTAGE);
 
 int BATTERY_SENSE_PIN = A0;  // select the input pin for the battery sense point
-int oldBatteryPcnt = 0;
-
 
 void setup()
 {
@@ -85,7 +83,7 @@ void setup()
 
 void presentation()  {
   // Send the sketch version information to the gateway and Controller
-  sendSketchInfo("Pressure Sensor", "1.1");
+  sendSketchInfo("Pressure Sensor", "1.2");
 
   // Register sensors to gw
   present(CHILD_ID, S_BARO);
@@ -98,41 +96,23 @@ void loop()
   // Read pressure and temperature
 	float pressure = bmp.readPressure();
 	float temperature = bmp.readTemperature();
-  
-    
+      
 	// Read voltage
   int sensorValue = analogRead(BATTERY_SENSE_PIN);    // Battery monitoring reading
-  
   float volt  = sensorValue * VBAT_PER_BITS;
-  //int batteryPcnt = sensorValue / 10;
-  int batteryPcnt = static_cast<int>(((volt-VMIN)/(VMAX-VMIN))*100.);   
 
+  // Debug Output
   #ifdef MY_DEBUG
   Serial.print("Temperature = "); Serial.print(temperature); Serial.println(" *C"); 
   Serial.print("Pressure = "); Serial.print(pressure); Serial.println(" hPa");
   Serial.print("A0 analogRead = "); Serial.println(sensorValue);
   Serial.print("Battery Voltage= "); Serial.print(volt); Serial.println(" V");
-  Serial.print("Battery percent= "); Serial.print(batteryPcnt); Serial.println(" %");
   #endif
 
   // Send values to gateway
-  if (temperature != lastTemp)
-  {
-    send(tempMsg.set(temperature, 1));
-    lastTemp = temperature;
-  }
-
-  if (pressure != lastPressure)
-  {
-    send(pressureMsg.set(pressure, V_PRESSURE));
-    lastPressure = pressure;
-  }
-
-  if (volt != lastVolt)
-  {
-    send(voltMsg.set(volt, 2));
-    lastVolt = volt;
-  }
+  send(tempMsg.set(temperature, 1));
+  send(pressureMsg.set(pressure, V_PRESSURE));
+  send(voltMsg.set(volt, 2));
   
 	sleep(SLEEP_TIME);
 }
