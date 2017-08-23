@@ -102,7 +102,7 @@ void loop()
 {
   Serial.println("loop");
   // Read pressure as mBar and temperature
-  float pressure = bmp.readPressure() / 100;
+  float pressure = bmp.readPressure()/100;
   float temperature = bmp.readTemperature();
 
   #ifdef BATTERY_SENSE_PIN
@@ -116,7 +116,7 @@ void loop()
   // Debug Output
   #ifdef MY_DEBUG
     Serial.print("Temperature = "); Serial.print(temperature); Serial.println(" *C");
-    Serial.print("Pressure = "); Serial.print(pressure); Serial.println(" mBar");
+    Serial.print("Pressure = "); Serial.print(pressure); Serial.println(" hPa");
     #ifdef BATTERY_SENSE_PIN
       Serial.print("A0 analogRead = "); Serial.println(sensorValue);
       Serial.print("Battery Voltage= "); Serial.print(volt); Serial.println(" V");
@@ -128,7 +128,7 @@ void loop()
   send(tempMsg.set(temperature, 1));
   send(pressureMsg.set(pressure, 2));
   #ifdef BATTERY_SENSE_PIN
-    send(voltMsg.set(sensorValue, 0));
+    send(voltMsg.set(volt, 2));
     sendBatteryLevel(batteryPcnt);
   #endif
   sleep(SLEEP_TIME);
