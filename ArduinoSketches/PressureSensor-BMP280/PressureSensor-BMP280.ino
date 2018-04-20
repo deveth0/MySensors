@@ -33,14 +33,14 @@
 //////////////////////////////////////////////////////
 ///////////////// NODE CONFIGURATION /////////////////
 //////////////////////////////////////////////////////
-//#define MY_DEBUG // Enable debug prints to serial monitor
+#define MY_DEBUG // Enable debug prints to serial monitor
 
 
-#define BME280; // Enable if you are using a BME280 instead of BMP280
+//#define BME280; // Enable if you are using a BME280 instead of BMP280
 
 // disable this if you don't want to measure the voltage
-//#define BATTERY_SENSE_PIN A0  // select the input pin for the battery sense point
-//#define SEND_VOLTAGE; // Enable if you want to send the voltage explicit
+#define BATTERY_SENSE_PIN A0  // select the input pin for the battery sense point
+#define SEND_VOLTAGE; // Enable if you want to send the voltage explicit
 #define VMIN 1.9  // Battery Level 0%
 #define VMAX 3.3  // Batter Level 100%
 #define VBAT_PER_BITS 0.003363075  // Volts per bit on the A0 pin. For 470k and 1M Ohm @ 3.3V
