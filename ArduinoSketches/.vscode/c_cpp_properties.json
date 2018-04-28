@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:\\Users\\deveth0\\Documents\\Arduino\\hardware\\espressif\\esp32\\cores\\esp32",
+                "C:\\Users\\deveth0\\Documents\\Arduino\\libraries",
+                "D:\\Develop\\BBQ_Thermometer\\BBQ_Display",
+                "c:/Users/deveth0/Documents/Arduino/libraries/RFM69-master",
+                "c:/Users/deveth0/Documents/Arduino/libraries/Mini_Grafx/src",
+                "c:/Users/deveth0/Documents/Arduino/libraries/Adafruit_GFX_Library",
+                "c:/Users/deveth0/Documents/Arduino/libraries/Adafruit_STMPE610-master",
+                "c:/Users/deveth0/Documents/Arduino/libraries/simpleDSTadjust",
+                "C:\\Users\\deveth0\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\cores\\arduino"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "C:\\Users\\deveth0\\Documents\\Arduino\\hardware\\espressif\\esp32\\cores\\esp32",
+                    "C:\\Users\\deveth0\\Documents\\Arduino\\libraries",
+                    "D:\\Develop\\BBQ_Thermometer\\BBQ_Display",
+                    "${workspaceRoot}",
+                    "C:\\Users\\deveth0\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.6.20\\cores\\arduino"
+                ]
+            },
+            "intelliSenseMode": "msvc-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 3
+}
